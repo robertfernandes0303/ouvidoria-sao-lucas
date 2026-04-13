@@ -6,62 +6,69 @@ st.set_page_config(page_title="Ouvidoria - Instituto Social São Lucas", layout=
 
 st.markdown("""
     <style>
-    /* Fundo geral */
-    .main { background-color: #f0f4f8; }
+    /* Fundo da tela e conteúdo */
+    .main, .block-container { background-color: #F0F7FC !important; }
+    body { background-color: #F0F7FC !important; }
 
-    /* Botões primários */
+    /* Botões */
     .stButton>button {
         width: 100%;
-        background-color: #003366;
-        color: white;
+        background-color: #00AEEF;
+        color: #F0F7FC;
+        font-weight: 700;
         border: none;
         border-radius: 6px;
-        font-weight: 600;
         padding: 0.5rem 1rem;
         transition: background-color 0.2s;
     }
     .stButton>button:hover {
-        background-color: #00AEEF;
-        color: white;
+        background-color: #0099d6;
+        color: #F0F7FC;
     }
 
     /* Barra de progresso */
     .stProgress > div > div > div > div { background-color: #00AEEF; }
 
     /* Títulos */
-    h1 { color: #003366 !important; }
-    h2, h3 { color: #003366 !important; }
-
-    /* Caixas de info/warning/success */
-    .stAlert { border-radius: 6px; }
-
-    /* Checkbox */
-    .stCheckbox label { color: #003366; font-weight: 500; }
+    h1, h2, h3 { color: #00AEEF !important; }
 
     /* Cabeçalho institucional */
     .header-box {
-        background-color: #003366;
-        padding: 1rem 1.5rem;
+        background-color: #00AEEF;
+        padding: 0.75rem 1.5rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
         text-align: center;
     }
     .header-box p {
-        color: #00AEEF;
+        color: #F0F7FC;
         margin: 0;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
     }
 
-    /* Separador colorido */
+    /* Info / warning / success boxes */
+    .stAlert { border-radius: 6px; }
+
+    /* Labels dos campos */
+    label { color: #00AEEF !important; font-weight: 600 !important; }
+
+    /* Radio e checkbox */
+    .stRadio label, .stCheckbox label { color: #007aab !important; font-weight: 600 !important; }
+
+    /* Separador */
     hr { border-top: 2px solid #00AEEF; }
+
+    /* Texto de etapa */
+    .etapa { color: #00AEEF; font-weight: 700; }
     </style>
     """, unsafe_allow_html=True)
 
 # Logo e cabeçalho
 try:
-    st.image("logo-sao-lucas.png", width=220)
+    st.image("logo-sao-lucas.png", width=200)
 except:
     pass
 
@@ -81,7 +88,7 @@ if 'dados' not in st.session_state:
 if st.session_state.passo < 5:
     passos_labels = ["LGPD", "Identificação", "Classificação", "Relato"]
     progresso_pct = int((st.session_state.passo / 4) * 100)
-    st.markdown(f"**Etapa {st.session_state.passo} de 4 — {passos_labels[st.session_state.passo - 1]}**")
+    st.markdown(f"<p class='etapa'>Etapa {st.session_state.passo} de 4 — {passos_labels[st.session_state.passo - 1]}</p>", unsafe_allow_html=True)
     st.progress(progresso_pct)
     st.write("")
 
@@ -115,17 +122,23 @@ elif st.session_state.passo == 2:
         retorno = st.checkbox("Desejo receber retorno sobre minha manifestação por e-mail")
     else:
         st.warning("Relatos anônimos são tratados internamente, mas não permitem o envio de protocolo ou resposta direta.")
-    if st.button("Próximo →"):
-        if perfil == "— Selecione —":
-            st.error("Por favor, selecione seu perfil de relacionamento.")
-        else:
-            st.session_state.dados.update({
-                'perfil': perfil, 'identifica': identifica,
-                'nome': nome, 'cpf': cpf, 'email': email,
-                'tel': tel, 'retorno': retorno
-            })
-            st.session_state.passo = 3
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        if st.button("← Voltar"):
+            st.session_state.passo = 1
             st.rerun()
+    with col2:
+        if st.button("Próximo →"):
+            if perfil == "— Selecione —":
+                st.error("Por favor, selecione seu perfil de relacionamento.")
+            else:
+                st.session_state.dados.update({
+                    'perfil': perfil, 'identifica': identifica,
+                    'nome': nome, 'cpf': cpf, 'email': email,
+                    'tel': tel, 'retorno': retorno
+                })
+                st.session_state.passo = 3
+                st.rerun()
 
 # --- TELA 3: CLASSIFICAÇÃO E RELATO ---
 elif st.session_state.passo == 3:
