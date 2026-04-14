@@ -164,36 +164,52 @@ label, .stSelectbox label, .stTextInput label,
 }
 
 /* Radio */
-.stRadio > label {
+.stRadio > label,
+div[data-testid="stRadio"] > label {
     font-size: 0.82rem !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     color: #005f8a !important;
+    -webkit-text-fill-color: #005f8a !important;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 .stRadio > div {
     gap: 8px;
 }
-.stRadio > div > label {
-    background: #F7FCFF;
-    border: 1.5px solid #C4E3F5;
-    border-radius: 8px;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: all 0.15s;
+.stRadio > div > label,
+div[data-testid="stRadio"] div[role="radiogroup"] label {
+    background: #F7FCFF !important;
+    border: 1.5px solid #C4E3F5 !important;
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    cursor: pointer !important;
+    transition: all 0.15s !important;
     font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    color: #1a3a4a !important;
+    font-weight: 600 !important;
+    color: #2e2e2e !important;
+    -webkit-text-fill-color: #2e2e2e !important;
     text-transform: none !important;
     letter-spacing: normal !important;
 }
-.stRadio > div > label:hover {
-    border-color: #00AEEF;
-    background: #EEF6FB;
+.stRadio > div > label:hover,
+div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+    border-color: #00AEEF !important;
+    background: #EEF6FB !important;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label p,
+div[data-testid="stRadio"] div[role="radiogroup"] label span,
+.stRadio > div > label p,
+.stRadio > div > label span {
+    color: #2e2e2e !important;
+    -webkit-text-fill-color: #2e2e2e !important;
+    font-weight: 600 !important;
 }
 
-/* Checkbox */
-.stCheckbox label, .stCheckbox span, .stCheckbox p {
+/* Checkbox — texto */
+.stCheckbox label, .stCheckbox span, .stCheckbox p,
+div[data-testid="stCheckbox"] label,
+div[data-testid="stCheckbox"] span,
+div[data-testid="stCheckbox"] p {
     font-size: 0.9rem !important;
     font-weight: 600 !important;
     color: #2e2e2e !important;
@@ -201,6 +217,18 @@ label, .stSelectbox label, .stTextInput label,
     letter-spacing: normal !important;
     -webkit-text-fill-color: #2e2e2e !important;
     opacity: 1 !important;
+}
+/* Checkbox — caixa com contorno azul visível */
+div[data-testid="stCheckbox"] > label > div:first-child {
+    border: 2px solid #00AEEF !important;
+    border-radius: 4px !important;
+    background-color: #F7FCFF !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+}
+div[data-testid="stCheckbox"] > label > div:first-child svg {
+    color: #00AEEF !important;
+    fill: #00AEEF !important;
 }
 
 /* Buttons */
