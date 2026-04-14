@@ -195,8 +195,8 @@ label, .stSelectbox label, .stTextInput label,
 /* Checkbox */
 .stCheckbox label {
     font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    color: #1a3a4a !important;
+    font-weight: 600 !important;
+    color: #2e2e2e !important;
     text-transform: none !important;
     letter-spacing: normal !important;
 }
