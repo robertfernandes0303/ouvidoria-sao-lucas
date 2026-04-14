@@ -13,6 +13,29 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* ── MOBILE FIRST ── */
+@media (max-width: 768px) {
+  .main .block-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 1rem !important;
+  }
+  .header-strip {
+    padding: 0.9rem 1rem !important;
+    border-radius: 10px !important;
+  }
+  .header-strip h2 { font-size: 1rem !important; }
+  .step-title { font-size: 1.1rem !important; }
+  .protocol-box h2 { font-size: 1.2rem !important; }
+  .resumo-item { flex-direction: column; gap: 2px; }
+  .resumo-value { text-align: left !important; }
+  [data-testid="column"] {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-width: 100% !important;
+  }
+}
+
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
@@ -26,6 +49,8 @@ html, body, [class*="css"] {
     padding-top: 2rem;
     padding-bottom: 3rem;
     max-width: 680px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
 /* Card container */
@@ -424,16 +449,10 @@ elif st.session_state.passo == 2:
 
     if identifica == "Quero me identificar":
         st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-        col_a, col_b = st.columns(2)
-        with col_a:
-            nome = st.text_input("Nome Completo", placeholder="Seu nome completo")
-        with col_b:
-            cpf = st.text_input("CPF ou Matrícula", placeholder="000.000.000-00")
-        col_c, col_d = st.columns(2)
-        with col_c:
-            email = st.text_input("E-mail", placeholder="seu@email.com")
-        with col_d:
-            tel = st.text_input("Telefone / WhatsApp", placeholder="(00) 00000-0000")
+        nome = st.text_input("Nome Completo", placeholder="Seu nome completo")
+        cpf = st.text_input("CPF ou Matrícula", placeholder="000.000.000-00")
+        email = st.text_input("E-mail", placeholder="seu@email.com")
+        tel = st.text_input("Telefone / WhatsApp", placeholder="(00) 00000-0000")
         st.write("")
         retorno = st.checkbox("✉️  Desejo receber retorno sobre minha manifestação por e-mail")
     else:
@@ -448,25 +467,22 @@ elif st.session_state.passo == 2:
         """, unsafe_allow_html=True)
 
     st.write("")
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        if st.button("← Voltar", use_container_width=True):
-            st.session_state.passo = 1
+    if st.button("Próximo →", use_container_width=True):
+        if perfil == "— Selecione —":
+            st.error("Selecione seu perfil de relacionamento para continuar.")
+        elif identifica == "Quero me identificar" and not nome.strip():
+            st.error("Informe seu nome completo para prosseguir identificado.")
+        else:
+            st.session_state.dados.update({
+                'perfil': perfil, 'identifica': identifica,
+                'nome': nome, 'cpf': cpf, 'email': email,
+                'tel': tel, 'retorno': retorno
+            })
+            st.session_state.passo = 3
             st.rerun()
-    with col2:
-        if st.button("Próximo →", use_container_width=True):
-            if perfil == "— Selecione —":
-                st.error("Selecione seu perfil de relacionamento para continuar.")
-            elif identifica == "Quero me identificar" and not nome.strip():
-                st.error("Informe seu nome completo para prosseguir identificado.")
-            else:
-                st.session_state.dados.update({
-                    'perfil': perfil, 'identifica': identifica,
-                    'nome': nome, 'cpf': cpf, 'email': email,
-                    'tel': tel, 'retorno': retorno
-                })
-                st.session_state.passo = 3
-                st.rerun()
+    if st.button("← Voltar", use_container_width=True, type="secondary"):
+        st.session_state.passo = 1
+        st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TELA 3 — DETALHES DA MANIFESTAÇÃO
@@ -478,19 +494,16 @@ elif st.session_state.passo == 3:
     <div class="step-sub">Preencha todos os campos para garantir o melhor encaminhamento</div>
     """, unsafe_allow_html=True)
 
-    col_u, col_t = st.columns(2)
-    with col_u:
-        unidade = st.selectbox("Unidade da Ocorrência", [
-            "— Selecione —",
-            "Aripuanã", "Campo Novo do Parecis - CAPS", "Campo Verde", "Guarantã do Norte",
-            "Juína", "Juscimeira", "Pedro de Toledo", "Pontes e Lacerda",
-            "São José do Rio Claro - Hospital", "São José do Rio Claro - PAM",
-            "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
-        ])
-    with col_t:
-        tipo = st.selectbox("Tipo de Manifestação", [
-            "— Selecione —", "Elogio", "Sugestão", "Solicitação", "Reclamação", "Denúncia"
-        ])
+    unidade = st.selectbox("Unidade da Ocorrência", [
+        "— Selecione —",
+        "Aripuanã", "Campo Novo do Parecis - CAPS", "Campo Verde", "Guarantã do Norte",
+        "Juína", "Juscimeira", "Pedro de Toledo", "Pontes e Lacerda",
+        "São José do Rio Claro - Hospital", "São José do Rio Claro - PAM",
+        "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
+    ])
+    tipo = st.selectbox("Tipo de Manifestação", [
+        "— Selecione —", "Elogio", "Sugestão", "Solicitação", "Reclamação", "Denúncia"
+    ])
 
     assunto = st.selectbox("Assunto Principal", [
         "— Selecione —",
@@ -531,45 +544,42 @@ elif st.session_state.passo == 3:
     )
 
     st.write("")
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        if st.button("← Voltar", use_container_width=True):
-            st.session_state.passo = 2
+    if st.button("Enviar Manifestação ✓", use_container_width=True):
+        erros = []
+        if unidade == "— Selecione —": erros.append("Selecione a unidade da ocorrência.")
+        if tipo == "— Selecione —": erros.append("Selecione o tipo de manifestação.")
+        if assunto == "— Selecione —": erros.append("Selecione o assunto principal.")
+        if not relato.strip() or len(relato.strip()) < 30:
+            erros.append("Descreva o relato com pelo menos 30 caracteres.")
+        if erros:
+            for e in erros:
+                st.error(e)
+        else:
+            st.session_state.dados.update({
+                'unidade': unidade, 'tipo': tipo,
+                'assunto': assunto, 'relato': relato
+            })
+            st.session_state.protocolo = (
+                "OUV-" +
+                datetime.now().strftime("%Y%m%d") +
+                "-" + str(uuid.uuid4()).upper()[:6]
+            )
+            with st.spinner("Processando sua manifestação..."):
+                bar = st.progress(0)
+                st.caption("💾 Salvando no banco de dados local...")
+                time.sleep(0.8); bar.progress(33)
+                st.caption("🔗 Integrando com o Jira Service Management...")
+                time.sleep(0.8); bar.progress(66)
+                if tipo == "Denúncia":
+                    st.caption("🚨 Enviando alerta crítico à Diretoria...")
+                    time.sleep(0.6)
+                bar.progress(100)
+                time.sleep(0.4)
+            st.session_state.passo = 4
             st.rerun()
-    with col2:
-        if st.button("Enviar Manifestação ✓", use_container_width=True):
-            erros = []
-            if unidade == "— Selecione —": erros.append("Selecione a unidade da ocorrência.")
-            if tipo == "— Selecione —": erros.append("Selecione o tipo de manifestação.")
-            if assunto == "— Selecione —": erros.append("Selecione o assunto principal.")
-            if not relato.strip() or len(relato.strip()) < 30:
-                erros.append("Descreva o relato com pelo menos 30 caracteres.")
-            if erros:
-                for e in erros:
-                    st.error(e)
-            else:
-                st.session_state.dados.update({
-                    'unidade': unidade, 'tipo': tipo,
-                    'assunto': assunto, 'relato': relato
-                })
-                st.session_state.protocolo = (
-                    "OUV-" +
-                    datetime.now().strftime("%Y%m%d") +
-                    "-" + str(uuid.uuid4()).upper()[:6]
-                )
-                with st.spinner("Processando sua manifestação..."):
-                    bar = st.progress(0)
-                    st.caption("💾 Salvando no banco de dados local...")
-                    time.sleep(0.8); bar.progress(33)
-                    st.caption("🔗 Integrando com o Jira Service Management...")
-                    time.sleep(0.8); bar.progress(66)
-                    if tipo == "Denúncia":
-                        st.caption("🚨 Enviando alerta crítico à Diretoria...")
-                        time.sleep(0.6)
-                    bar.progress(100)
-                    time.sleep(0.4)
-                st.session_state.passo = 4
-                st.rerun()
+    if st.button("← Voltar", use_container_width=True, type="secondary"):
+        st.session_state.passo = 2
+        st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TELA 4 — CONFIRMAÇÃO
