@@ -350,12 +350,20 @@ if st.session_state.passo == 1:
     st.markdown("""
     <div class="step-badge">Etapa 1 de 4</div>
     <div class="step-title">Bem-vindo à Ouvidoria</div>
-    <div class="step-sub">Seu canal direto de escuta ativa com o Instituto Social São Lucas</div>
+    <div style="font-size:0.85rem;color:#3a3a3a;margin-bottom:1.2rem;font-weight:500;">
+        Seu canal direto de escuta ativa com o Instituto Social São Lucas
+    </div>
+    <div style="background:#F7FCFF;border:1.5px solid #C4E3F5;border-radius:10px;
+         padding:1.1rem 1.3rem;margin-bottom:1.2rem;font-size:0.92rem;
+         color:#2e2e2e;line-height:1.75;font-weight:400;">
+        No Instituto Social São Lucas, acreditamos que a humanização e a escuta ativa 
+        são pilares essenciais para oferecer uma saúde pública com afeto, respeito e 
+        excelência. Este é o seu canal de comunicação direto, seguro e confidencial. 
+        Queremos ouvir a sua voz! Você pode utilizar este espaço para registrar 
+        <strong style="color:#00AEEF;">Elogios, Sugestões, Solicitações, Reclamações ou Denúncias</strong> 
+        referentes aos nossos serviços e unidades.
+    </div>
     """, unsafe_allow_html=True)
-
-    st.info("""
-No Instituto Social São Lucas, acreditamos que a humanização e a escuta ativa são pilares essenciais para oferecer uma saúde pública com afeto, respeito e excelência. Este é o seu canal de comunicação direto, seguro e confidencial. Queremos ouvir a sua voz! Você pode utilizar este espaço para registrar **Elogios, Sugestões, Solicitações, Reclamações ou Denúncias** referentes aos nossos serviços e unidades.
-    """)
 
     st.markdown("""
     <div style="background:#F7FCFF;border:1.5px solid #C4E3F5;border-radius:10px;
