@@ -1,136 +1,456 @@
 import streamlit as st
 import time
 import uuid
+from datetime import datetime
 
-st.set_page_config(page_title="Ouvidoria - Instituto Social São Lucas", layout="centered")
-
-st.markdown("""
-    <style>
-    /* Fundo da tela e conteúdo */
-    .main, .block-container { background-color: #F0F7FC !important; }
-    body { background-color: #F0F7FC !important; }
-
-    /* Botões */
-    .stButton>button {
-        width: 100%;
-        background-color: #00AEEF;
-        color: #F0F7FC;
-        font-weight: 700;
-        border: none;
-        border-radius: 6px;
-        padding: 0.5rem 1rem;
-        transition: background-color 0.2s;
-    }
-    .stButton>button:hover {
-        background-color: #0099d6;
-        color: #F0F7FC;
-    }
-
-    /* Barra de progresso */
-    .stProgress > div > div > div > div { background-color: #00AEEF; }
-
-    /* Títulos */
-    h1, h2, h3 { color: #00AEEF !important; }
-
-    /* Cabeçalho institucional */
-    .header-box {
-        background-color: #00AEEF;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
-    .header-box p {
-        color: #F0F7FC;
-        margin: 0;
-        font-size: 0.9rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-    }
-
-    /* Info / warning / success boxes */
-    .stAlert { border-radius: 6px; }
-
-    /* Labels dos campos */
-    label { color: #00AEEF !important; font-weight: 600 !important; }
-
-    /* Radio e checkbox */
-    .stRadio label, .stCheckbox label { color: #007aab !important; font-weight: 600 !important; }
-
-    /* Separador */
-    hr { border-top: 2px solid #00AEEF; }
-
-    /* Texto de etapa */
-    .etapa { color: #00AEEF; font-weight: 700; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# Logo e cabeçalho
-try:
-    st.image("logo-sao-lucas.png", width=200)
-except:
-    pass
+st.set_page_config(
+    page_title="Ouvidoria — Instituto Social São Lucas",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
 st.markdown("""
-<div class="header-box">
-    <p>Sistema de Ouvidoria Institucional</p>
-</div>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Fundo geral */
+.stApp {
+    background-color: #EEF6FB;
+}
+.main .block-container {
+    background-color: #EEF6FB;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    max-width: 680px;
+}
+
+/* Card container */
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 174, 239, 0.08);
+    border: 1px solid #D6EDF8;
+    margin-bottom: 1.5rem;
+}
+
+/* Cabeçalho */
+.header-strip {
+    background: linear-gradient(135deg, #00AEEF 0%, #0090cc 100%);
+    border-radius: 14px;
+    padding: 1.2rem 1.8rem;
+    margin-bottom: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.header-strip p {
+    color: #EEF6FB;
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.header-strip h2 {
+    color: #ffffff !important;
+    margin: 0 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+}
+
+/* Etapa / step badge */
+.step-badge {
+    display: inline-block;
+    background: #00AEEF;
+    color: #EEF6FB;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 0.4rem;
+}
+.step-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #00AEEF;
+    margin-bottom: 0.2rem;
+}
+.step-sub {
+    font-size: 0.85rem;
+    color: #7ab8d4;
+    margin-bottom: 1.5rem;
+}
+
+/* Progress bar */
+.stProgress > div > div > div > div {
+    background: linear-gradient(90deg, #00AEEF, #0090cc);
+    border-radius: 4px;
+}
+.stProgress > div > div {
+    background-color: #D6EDF8;
+    border-radius: 4px;
+    height: 6px !important;
+}
+
+/* Labels */
+label, .stSelectbox label, .stTextInput label,
+.stTextArea label, .stFileUploader label {
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #005f8a !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px !important;
+}
+
+/* Inputs */
+.stTextInput input, .stTextArea textarea {
+    border: 1.5px solid #C4E3F5 !important;
+    border-radius: 8px !important;
+    background: #F7FCFF !important;
+    color: #1a3a4a !important;
+    font-size: 0.95rem !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s !important;
+}
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: #00AEEF !important;
+    box-shadow: 0 0 0 3px rgba(0,174,239,0.12) !important;
+}
+
+/* Select */
+.stSelectbox > div > div {
+    border: 1.5px solid #C4E3F5 !important;
+    border-radius: 8px !important;
+    background: #F7FCFF !important;
+    color: #1a3a4a !important;
+    font-size: 0.95rem !important;
+}
+.stSelectbox > div > div:focus-within {
+    border-color: #00AEEF !important;
+    box-shadow: 0 0 0 3px rgba(0,174,239,0.12) !important;
+}
+
+/* Radio */
+.stRadio > label {
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: #005f8a !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.stRadio > div {
+    gap: 8px;
+}
+.stRadio > div > label {
+    background: #F7FCFF;
+    border: 1.5px solid #C4E3F5;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #1a3a4a !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+.stRadio > div > label:hover {
+    border-color: #00AEEF;
+    background: #EEF6FB;
+}
+
+/* Checkbox */
+.stCheckbox label {
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #1a3a4a !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Buttons */
+.stButton > button {
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.92rem !important;
+    padding: 0.6rem 1.4rem !important;
+    transition: all 0.2s !important;
+    width: 100% !important;
+}
+.stButton > button[kind="primary"],
+.stButton > button:not([kind]) {
+    background: #00AEEF !important;
+    color: #EEF6FB !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,174,239,0.25) !important;
+}
+.stButton > button:hover {
+    background: #0090cc !important;
+    box-shadow: 0 4px 14px rgba(0,174,239,0.35) !important;
+    transform: translateY(-1px) !important;
+}
+.stButton > button:active {
+    transform: translateY(0px) !important;
+}
+
+/* Botão Voltar */
+div[data-testid="column"]:first-child .stButton > button {
+    background: #EEF6FB !important;
+    color: #00AEEF !important;
+    border: 1.5px solid #00AEEF !important;
+    box-shadow: none !important;
+}
+div[data-testid="column"]:first-child .stButton > button:hover {
+    background: #D6EDF8 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Alert boxes */
+.stAlert {
+    border-radius: 10px !important;
+    border-left-width: 4px !important;
+}
+
+/* File uploader */
+.stFileUploader {
+    border: 1.5px dashed #C4E3F5 !important;
+    border-radius: 10px !important;
+    background: #F7FCFF !important;
+    padding: 0.5rem !important;
+}
+
+/* Divider */
+hr {
+    border: none;
+    border-top: 2px solid #D6EDF8;
+    margin: 1.5rem 0;
+}
+
+/* Success box */
+.success-card {
+    background: linear-gradient(135deg, #00AEEF 0%, #0090cc 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    color: #EEF6FB;
+    margin-bottom: 1.5rem;
+}
+.success-card h1 {
+    color: #ffffff !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    margin: 0.5rem 0 0.3rem !important;
+}
+.success-card p {
+    color: rgba(238,246,251,0.85);
+    font-size: 0.9rem;
+    margin: 0;
+}
+.protocol-box {
+    background: #EEF6FB;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0 0.5rem;
+    text-align: center;
+}
+.protocol-box p {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #005f8a;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 4px;
+}
+.protocol-box h2 {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #00AEEF !important;
+    font-family: 'Courier New', monospace !important;
+    margin: 0 !important;
+    letter-spacing: 0.05em;
+}
+.resumo-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #D6EDF8;
+    font-size: 0.9rem;
+}
+.resumo-label {
+    color: #7ab8d4;
+    font-weight: 600;
+}
+.resumo-value {
+    color: #1a3a4a;
+    font-weight: 600;
+    text-align: right;
+}
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #F7FCFF;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+    color: #1a3a4a;
+    font-weight: 500;
+}
+.dot-ok {
+    width: 8px; height: 8px;
+    background: #008B8B;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Inicialização do estado
+# Inicialização
 if 'passo' not in st.session_state:
     st.session_state.passo = 1
 if 'dados' not in st.session_state:
     st.session_state.dados = {}
+if 'protocolo' not in st.session_state:
+    st.session_state.protocolo = ""
 
-# Indicador de progresso
-if st.session_state.passo < 5:
-    passos_labels = ["LGPD", "Identificação", "Classificação", "Relato"]
-    progresso_pct = int((st.session_state.passo / 4) * 100)
-    st.markdown(f"<p class='etapa'>Etapa {st.session_state.passo} de 4 — {passos_labels[st.session_state.passo - 1]}</p>", unsafe_allow_html=True)
-    st.progress(progresso_pct)
-    st.write("")
+# ── CABEÇALHO ──────────────────────────────────────────────────────────────────
+try:
+    st.image("logo-sao-lucas.png", width=180)
+except:
+    pass
 
-# --- TELA 1: BOAS-VINDAS E LGPD ---
+st.markdown("""
+<div class="header-strip">
+  <div>
+    <p>Canal Oficial</p>
+    <h2>Sistema de Ouvidoria</h2>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ── BARRA DE PROGRESSO DISCRETA ───────────────────────────────────────────────
+if st.session_state.passo <= 4:
+    pct = int(((st.session_state.passo - 1) / 3) * 100)
+    st.progress(pct)
+    st.markdown("<div style='margin-bottom:1.5rem;'></div>", unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TELA 1 — BOAS-VINDAS E LGPD
+# ══════════════════════════════════════════════════════════════════════════════
 if st.session_state.passo == 1:
-    st.info("No Instituto Social São Lucas, acreditamos que a humanização e a escuta ativa são pilares essenciais. Queremos ouvir a sua voz!")
-    st.write("Nosso compromisso: Tempo médio para análise e resposta é de **4 dias úteis**.")
+    st.markdown("""
+    <div class="step-badge">Etapa 1 de 4</div>
+    <div class="step-title">Bem-vindo à Ouvidoria</div>
+    <div class="step-sub">Seu canal direto de escuta ativa com o Instituto Social São Lucas</div>
+    """, unsafe_allow_html=True)
+
+    st.info("""
+No Instituto Social São Lucas, acreditamos que a humanização e a escuta ativa são pilares essenciais para oferecer uma saúde pública com afeto, respeito e excelência. Este é o seu canal de comunicação direto, seguro e confidencial. Queremos ouvir a sua voz! Você pode utilizar este espaço para registrar **Elogios, Sugestões, Solicitações, Reclamações ou Denúncias** referentes aos nossos serviços e unidades.
+    """)
+
+    st.markdown("""
+    <div style="background:#F7FCFF;border:1.5px solid #C4E3F5;border-radius:10px;
+         padding:1rem 1.2rem;margin:1rem 0 1.2rem;">
+      <div style="font-size:0.78rem;font-weight:700;color:#005f8a;text-transform:uppercase;
+           letter-spacing:0.08em;margin-bottom:6px;">🔒 Aviso de Privacidade — LGPD</div>
+      <div style="font-size:0.88rem;color:#1a3a4a;line-height:1.6;">
+        As informações fornecidas serão utilizadas exclusivamente para análise e resposta 
+        da sua manifestação, em conformidade com a <strong>Lei nº 13.709/2018 (LGPD)</strong>.
+        Você pode optar pelo anonimato na próxima etapa.
+      </div>
+    </div>
+    <div style="background:#EEF6FB;border-radius:8px;padding:0.75rem 1rem;
+         display:flex;gap:12px;align-items:center;margin-bottom:1.2rem;">
+      <div style="font-size:1.3rem;">⏱️</div>
+      <div style="font-size:0.88rem;color:#1a3a4a;">
+        <strong>Prazo de resposta:</strong> até <strong style="color:#00AEEF;">4 dias úteis</strong> 
+        após o registro da manifestação.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    aceite = st.checkbox("Li e concordo com a Política de Privacidade e o tratamento dos meus dados conforme a LGPD.")
     st.write("")
-    aceite = st.checkbox("Li e aceito a Política de Privacidade e o tratamento dos meus dados conforme a LGPD.")
-    if st.button("Iniciar Manifestação"):
+    if st.button("Iniciar Manifestação →", use_container_width=True):
         if aceite:
             st.session_state.passo = 2
             st.rerun()
         else:
             st.error("É necessário aceitar os termos da LGPD para prosseguir.")
 
-# --- TELA 2: IDENTIFICAÇÃO ---
+# ══════════════════════════════════════════════════════════════════════════════
+# TELA 2 — IDENTIFICAÇÃO
+# ══════════════════════════════════════════════════════════════════════════════
 elif st.session_state.passo == 2:
-    st.write("### Perfil e Identificação")
+    st.markdown("""
+    <div class="step-badge">Etapa 2 de 4</div>
+    <div class="step-title">Identificação</div>
+    <div class="step-sub">Você pode se identificar ou manter seu anonimato</div>
+    """, unsafe_allow_html=True)
+
     perfil = st.selectbox("Perfil de Relacionamento", [
-        "— Selecione —", "Paciente, Familiar ou Acompanhante", "Colaborador", "Médico", "Fornecedor ou Outro"
+        "— Selecione —",
+        "Paciente, Familiar ou Acompanhante",
+        "Colaborador",
+        "Médico",
+        "Fornecedor ou Outro"
     ])
-    identifica = st.radio("Deseja se identificar?", ["Quero fazer um relato anônimo", "Quero me identificar"])
+
+    st.write("")
+    identifica = st.radio("Como deseja prosseguir?", [
+        "Quero fazer um relato anônimo",
+        "Quero me identificar"
+    ])
+
     nome = cpf = email = tel = ""
     retorno = False
+
     if identifica == "Quero me identificar":
-        nome = st.text_input("Nome Completo")
-        cpf = st.text_input("CPF ou Matrícula")
-        email = st.text_input("E-mail")
-        tel = st.text_input("Telefone / WhatsApp")
-        retorno = st.checkbox("Desejo receber retorno sobre minha manifestação por e-mail")
+        st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+        col_a, col_b = st.columns(2)
+        with col_a:
+            nome = st.text_input("Nome Completo", placeholder="Seu nome completo")
+        with col_b:
+            cpf = st.text_input("CPF ou Matrícula", placeholder="000.000.000-00")
+        col_c, col_d = st.columns(2)
+        with col_c:
+            email = st.text_input("E-mail", placeholder="seu@email.com")
+        with col_d:
+            tel = st.text_input("Telefone / WhatsApp", placeholder="(00) 00000-0000")
+        st.write("")
+        retorno = st.checkbox("✉️  Desejo receber retorno sobre minha manifestação por e-mail")
     else:
-        st.warning("Relatos anônimos são tratados internamente, mas não permitem o envio de protocolo ou resposta direta.")
-    col1, col2 = st.columns([1, 3])
+        st.markdown("""
+        <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:10px;
+             padding:0.9rem 1.1rem;margin-top:0.8rem;">
+          <div style="font-size:0.88rem;color:#6d4c00;line-height:1.6;">
+            <strong>ℹ️ Relato anônimo:</strong> Sua identidade será totalmente preservada. 
+            Não será possível enviar protocolo ou resposta direta ao registrante.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.write("")
+    col1, col2 = st.columns([1, 2])
     with col1:
-        if st.button("← Voltar"):
+        if st.button("← Voltar", use_container_width=True):
             st.session_state.passo = 1
             st.rerun()
     with col2:
-        if st.button("Próximo →"):
+        if st.button("Próximo →", use_container_width=True):
             if perfil == "— Selecione —":
-                st.error("Por favor, selecione seu perfil de relacionamento.")
+                st.error("Selecione seu perfil de relacionamento para continuar.")
+            elif identifica == "Quero me identificar" and not nome.strip():
+                st.error("Informe seu nome completo para prosseguir identificado.")
             else:
                 st.session_state.dados.update({
                     'perfil': perfil, 'identifica': identifica,
@@ -140,82 +460,182 @@ elif st.session_state.passo == 2:
                 st.session_state.passo = 3
                 st.rerun()
 
-# --- TELA 3: CLASSIFICAÇÃO E RELATO ---
+# ══════════════════════════════════════════════════════════════════════════════
+# TELA 3 — DETALHES DA MANIFESTAÇÃO
+# ══════════════════════════════════════════════════════════════════════════════
 elif st.session_state.passo == 3:
-    st.write("### Detalhes da Manifestação")
-    unidade = st.selectbox("Unidade da Ocorrência", [
-        "— Selecione —",
-        "Aripuanã", "Campo Novo do Parecis - CAPS", "Campo Verde", "Guarantã do Norte",
-        "Juína", "Juscimeira", "Pedro de Toledo", "Pontes e Lacerda",
-        "São José do Rio Claro - Hospital", "São José do Rio Claro - PAM",
-        "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
-    ])
-    tipo = st.selectbox("Tipo de Manifestação", [
-        "— Selecione —", "Elogio", "Sugestão", "Solicitação", "Reclamação", "Denúncia"
-    ])
+    st.markdown("""
+    <div class="step-badge">Etapa 3 de 4</div>
+    <div class="step-title">Detalhes da Manifestação</div>
+    <div class="step-sub">Preencha todos os campos para garantir o melhor encaminhamento</div>
+    """, unsafe_allow_html=True)
+
+    col_u, col_t = st.columns(2)
+    with col_u:
+        unidade = st.selectbox("Unidade da Ocorrência", [
+            "— Selecione —",
+            "Aripuanã", "Campo Novo do Parecis - CAPS", "Campo Verde", "Guarantã do Norte",
+            "Juína", "Juscimeira", "Pedro de Toledo", "Pontes e Lacerda",
+            "São José do Rio Claro - Hospital", "São José do Rio Claro - PAM",
+            "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
+        ])
+    with col_t:
+        tipo = st.selectbox("Tipo de Manifestação", [
+            "— Selecione —", "Elogio", "Sugestão", "Solicitação", "Reclamação", "Denúncia"
+        ])
+
     assunto = st.selectbox("Assunto Principal", [
         "— Selecione —",
-        "Atendimento Assistencial", "Tempo de Espera e Acesso", "Conduta Profissional e Ética",
-        "Infraestrutura e Hotelaria", "Apoio Diagnóstico e Terapêutico", "Administrativo e Burocrático"
+        "Atendimento Assistencial",
+        "Tempo de Espera e Acesso",
+        "Conduta Profissional e Ética",
+        "Infraestrutura e Hotelaria",
+        "Apoio Diagnóstico e Terapêutico",
+        "Administrativo e Burocrático"
     ])
+
     if tipo == "Denúncia":
-        st.warning("⚠️ Denúncias geram notificação imediata à Diretoria.")
-    relato = st.text_area("Descrição do Relato", placeholder="Descreva o que aconteceu com o máximo de detalhes...")
-    st.file_uploader("Anexar Evidências (Opcional)", type=["jpg", "png", "pdf", "mp3"])
+        st.markdown("""
+        <div style="background:#FFEBEE;border:1.5px solid #EF9A9A;border-radius:10px;
+             padding:0.9rem 1.1rem;margin:0.5rem 0;">
+          <div style="font-size:0.88rem;color:#b71c1c;line-height:1.6;">
+            <strong>🚨 Atenção:</strong> Denúncias são tratadas com <strong>prioridade máxima</strong> 
+            e geram notificação imediata à Diretoria Executiva.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.write("")
-    col1, col2 = st.columns([1, 3])
+    relato = st.text_area(
+        "Descrição Detalhada",
+        placeholder="Descreva com clareza o que aconteceu. Inclua data, horário, local e pessoas envolvidas sempre que possível...",
+        height=160
+    )
+    char_count = len(relato)
+    cor_count = "#00AEEF" if char_count >= 30 else "#7ab8d4"
+    st.markdown(f"<div style='font-size:0.75rem;color:{cor_count};text-align:right;margin-top:-10px;'>{char_count} caracteres</div>", unsafe_allow_html=True)
+
+    st.write("")
+    st.file_uploader(
+        "Anexar Evidências (opcional)",
+        type=["jpg", "jpeg", "png", "pdf", "mp4", "mp3"],
+        help="Imagens, documentos PDF ou vídeos. Máximo 200 MB."
+    )
+
+    st.write("")
+    col1, col2 = st.columns([1, 2])
     with col1:
-        if st.button("← Voltar"):
+        if st.button("← Voltar", use_container_width=True):
             st.session_state.passo = 2
             st.rerun()
     with col2:
-        if st.button("Enviar Manifestação"):
+        if st.button("Enviar Manifestação ✓", use_container_width=True):
             erros = []
             if unidade == "— Selecione —": erros.append("Selecione a unidade da ocorrência.")
             if tipo == "— Selecione —": erros.append("Selecione o tipo de manifestação.")
             if assunto == "— Selecione —": erros.append("Selecione o assunto principal.")
-            if not relato.strip(): erros.append("Descreva o relato antes de enviar.")
+            if not relato.strip() or len(relato.strip()) < 30:
+                erros.append("Descreva o relato com pelo menos 30 caracteres.")
             if erros:
-                for e in erros: st.error(e)
+                for e in erros:
+                    st.error(e)
             else:
-                st.session_state.dados.update({'unidade': unidade, 'tipo': tipo, 'assunto': assunto, 'relato': relato})
-                with st.spinner("Processando automações..."):
-                    progresso = st.progress(0)
-                    st.write("💾 Salvando no Banco de Dados Local...")
-                    time.sleep(1)
-                    progresso.progress(40)
-                    st.write("🔗 Integrando com Jira Service Management...")
-                    time.sleep(1)
-                    progresso.progress(80)
+                st.session_state.dados.update({
+                    'unidade': unidade, 'tipo': tipo,
+                    'assunto': assunto, 'relato': relato
+                })
+                st.session_state.protocolo = (
+                    "OUV-" +
+                    datetime.now().strftime("%Y%m%d") +
+                    "-" + str(uuid.uuid4()).upper()[:6]
+                )
+                with st.spinner("Processando sua manifestação..."):
+                    bar = st.progress(0)
+                    st.caption("💾 Salvando no banco de dados local...")
+                    time.sleep(0.8); bar.progress(33)
+                    st.caption("🔗 Integrando com o Jira Service Management...")
+                    time.sleep(0.8); bar.progress(66)
                     if tipo == "Denúncia":
-                        st.write("🚨 Alerta Crítico enviado à Diretoria.")
-                        time.sleep(1)
-                    progresso.progress(100)
-                    st.session_state.passo = 4
-                    st.rerun()
+                        st.caption("🚨 Enviando alerta crítico à Diretoria...")
+                        time.sleep(0.6)
+                    bar.progress(100)
+                    time.sleep(0.4)
+                st.session_state.passo = 4
+                st.rerun()
 
-# --- TELA 4: SUCESSO ---
+# ══════════════════════════════════════════════════════════════════════════════
+# TELA 4 — CONFIRMAÇÃO
+# ══════════════════════════════════════════════════════════════════════════════
 elif st.session_state.passo == 4:
-    protocolo = "OUV-" + str(uuid.uuid4()).upper()[:8]
     dados = st.session_state.dados
-    st.success("✅ Manifestação Registrada com Sucesso!")
-    st.write("Sua participação é fundamental para o Instituto Social São Lucas.")
-    st.write("---")
-    st.info(f"""
-**Resumo do Registro:**
-- 🏥 Unidade: {dados.get('unidade', '-')}
-- 📋 Tipo: {dados.get('tipo', '-')}
-- 📌 Assunto: {dados.get('assunto', '-')}
-    """)
-    st.write("**Status da Notificação:**")
-    st.write("- ✔️ Registro gravado no servidor local (On-premise)")
-    st.write("- ✔️ Ticket aberto no Jira com SLA de 4 dias")
-    if dados.get('retorno') and dados.get('email'):
-        st.write(f"- ✔️ Protocolo **{protocolo}** enviado para **{dados.get('email')}**")
-    elif dados.get('identifica') == "Quero fazer um relato anônimo":
-        st.write("- ℹ️ Relato anônimo — protocolo não gerado conforme política de sigilo.")
+    protocolo = st.session_state.protocolo
+    tem_email = dados.get('retorno') and dados.get('email')
+    anonimo = dados.get('identifica') == "Quero fazer um relato anônimo"
+
+    st.markdown("""
+    <div style="text-align:center;padding:2rem 1rem 1.5rem;">
+      <div style="font-size:3rem;margin-bottom:0.5rem;">✅</div>
+      <div style="font-size:1.5rem;font-weight:700;color:#00AEEF;">Manifestação Registrada!</div>
+      <div style="font-size:0.9rem;color:#7ab8d4;margin-top:4px;">
+        Obrigado por contribuir com a melhoria dos nossos serviços.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Ticket e protocolo
+    if not anonimo and tem_email:
+        st.markdown(f"""
+        <div class="protocol-box">
+          <p>Número do Protocolo / Ticket</p>
+          <h2>{protocolo}</h2>
+          <div style="font-size:0.78rem;color:#7ab8d4;margin-top:6px;">
+            Enviado para <strong>{dados.get('email')}</strong>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+    elif not anonimo:
+        st.markdown(f"""
+        <div class="protocol-box">
+          <p>Número do Ticket</p>
+          <h2>{protocolo}</h2>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.info("**Relato anônimo registrado.** Seu sigilo está garantido. O protocolo não foi gerado conforme a política de anonimato.")
+
+    st.markdown("<hr>", unsafe_allow_html=True)
+
+    st.markdown("<div style='font-size:0.78rem;font-weight:700;color:#005f8a;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;'>Resumo do Registro</div>", unsafe_allow_html=True)
+    for label, key in [("Perfil", "perfil"), ("Unidade", "unidade"), ("Tipo", "tipo"), ("Assunto", "assunto")]:
+        st.markdown(f"""
+        <div class="resumo-item">
+          <span class="resumo-label">{label}</span>
+          <span class="resumo-value">{dados.get(key, '—')}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Status simplificado — só alerta crítico se denúncia
+    if dados.get('tipo') == "Denúncia":
+        st.markdown("<div style='margin-top:1.2rem;'></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="status-item" style="background:#FFEBEE;border:1px solid #EF9A9A;">
+          <div class="dot-ok" style="background:#c62828;"></div>
+          <span style="color:#b71c1c;font-weight:600;">Alerta crítico enviado à Diretoria Executiva</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='margin-top:1.5rem;font-size:0.8rem;color:#7ab8d4;text-align:center;'>Prazo de análise e resposta: até <strong style='color:#00AEEF;'>4 dias úteis</strong></div>", unsafe_allow_html=True)
     st.write("")
-    if st.button("Registrar Nova Manifestação"):
+    if st.button("Registrar Nova Manifestação", use_container_width=True):
         st.session_state.passo = 1
         st.session_state.dados = {}
+        st.session_state.protocolo = ""
         st.rerun()
+
+# Rodapé
+st.markdown("""
+<div style="text-align:center;margin-top:2rem;font-size:0.75rem;color:#7ab8d4;">
+  Instituto Social São Lucas · Ouvidoria Institucional · 
+  <span style="color:#00AEEF;font-weight:600;">ouvidoria@saolucas.org.br</span>
+</div>
+""", unsafe_allow_html=True)
