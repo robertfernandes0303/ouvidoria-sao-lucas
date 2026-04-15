@@ -527,7 +527,7 @@ elif st.session_state.passo == 3:
     unidade = st.selectbox("Unidade da Ocorrência", [
         "— Selecione —",
         "Aripuanã", "Campo Novo do Parecis - CAPS", "Campo Verde", "Guarantã do Norte",
-        "Juína", "Juscimeira", "Pedro de Toledo", "Pontes e Lacerda",
+        "Juína", "Juscimeira", "Matriz", "Pedro de Toledo", "Pontes e Lacerda",
         "São José do Rio Claro - Hospital", "São José do Rio Claro - PAM",
         "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
     ])
@@ -542,7 +542,8 @@ elif st.session_state.passo == 3:
         "Conduta Profissional e Ética",
         "Infraestrutura e Hotelaria",
         "Apoio Diagnóstico e Terapêutico",
-        "Administrativo e Burocrático"
+        "Administrativo e Burocrático",
+        "Outros"
     ])
 
     if tipo == "Denúncia":
