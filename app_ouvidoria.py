@@ -571,7 +571,7 @@ elif st.session_state.passo == 3:
     st.file_uploader(
         "Anexar Evidências (opcional)",
         type=["jpg", "jpeg", "png", "pdf", "mp4", "mp3"],
-        help="Imagens, documentos PDF ou vídeos. Máximo 200 MB."
+        help="Imagens, documentos PDF ou vídeos. Máximo 25 MB."
     )
 
     st.write("")
