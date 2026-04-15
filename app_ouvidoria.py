@@ -281,24 +281,6 @@ div[data-testid="column"]:first-child .stButton > button:hover {
     background: #F7FCFF !important;
     padding: 0.5rem !important;
 }
-/* Oculta o texto padrão "200MB per file" do Streamlit */
-.stFileUploader small,
-.stFileUploader span[data-testid="stFileUploaderDropzoneInstructions"] small,
-section[data-testid="stFileUploaderDropzone"] small,
-div[data-testid="stFileUploaderDropzoneInstructions"] small {
-    visibility: hidden !important;
-    display: none !important;
-}
-/* Insere texto customizado de 25MB */
-section[data-testid="stFileUploaderDropzone"]::after,
-div[data-testid="stFileUploaderDropzoneInstructions"]::after {
-    content: "Limite máximo: 25 MB por arquivo";
-    display: block;
-    font-size: 0.78rem;
-    color: #7ab8d4;
-    margin-top: 4px;
-    font-family: 'Inter', sans-serif;
-}
 
 /* Divider */
 hr {
