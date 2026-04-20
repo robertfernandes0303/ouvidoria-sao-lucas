@@ -466,7 +466,8 @@ elif st.session_state.passo == 2:
         "Acompanhante",
         "Prestador",
         "Colaborador",
-        "Fornecedor ou Outro"
+        "Fornecedor",
+        "Outro"
     ])
 
     st.write("")
