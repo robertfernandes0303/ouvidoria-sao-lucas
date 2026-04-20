@@ -435,7 +435,7 @@ if st.session_state.passo == 1:
          display:flex;gap:12px;align-items:center;margin-bottom:1.2rem;">
       <div style="font-size:1.3rem;">⏱️</div>
       <div style="font-size:0.88rem;color:#1a3a4a;">
-        <strong>Prazo de resposta:</strong> até <strong style="color:#00AEEF;">4 dias úteis</strong> 
+        <strong>Prazo de resposta:</strong> até <strong style="color:#00AEEF;">10 dias úteis</strong> 
         após o registro da manifestação.
       </div>
     </div>
@@ -671,7 +671,7 @@ elif st.session_state.passo == 4:
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<div style='margin-top:1.5rem;font-size:0.8rem;color:#7ab8d4;text-align:center;'>Prazo de análise e resposta: até <strong style='color:#00AEEF;'>4 dias úteis</strong></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:1.5rem;font-size:0.8rem;color:#7ab8d4;text-align:center;'>Prazo de análise e resposta: até <strong style='color:#00AEEF;'>10 dias úteis</strong></div>", unsafe_allow_html=True)
     st.write("")
     if st.button("Registrar Nova Manifestação", use_container_width=True):
         st.session_state.passo = 1
