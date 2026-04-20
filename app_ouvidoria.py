@@ -376,6 +376,8 @@ if 'dados' not in st.session_state:
     st.session_state.dados = {}
 if 'protocolo' not in st.session_state:
     st.session_state.protocolo = ""
+if 'modo' not in st.session_state:
+    st.session_state.modo = "registrar"  # "registrar" ou "consultar"
 
 # ── CABEÇALHO ──────────────────────────────────────────────────────────────────
 try:
@@ -392,16 +394,35 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# ── SELETOR DE MODO ────────────────────────────────────────────────────────────
+col_m1, col_m2 = st.columns(2)
+with col_m1:
+    if st.button("📋  Registrar Manifestação", use_container_width=True,
+        type="primary" if st.session_state.modo == "registrar" else "secondary"):
+        st.session_state.modo = "registrar"
+        st.session_state.passo = 1
+        st.rerun()
+with col_m2:
+    if st.button("🔍  Consultar Protocolo", use_container_width=True,
+        type="primary" if st.session_state.modo == "consultar" else "secondary"):
+        st.session_state.modo = "consultar"
+        st.rerun()
+
+st.markdown("<div style='margin-bottom:1rem;'></div>", unsafe_allow_html=True)
+
 # ── BARRA DE PROGRESSO DISCRETA ───────────────────────────────────────────────
-if st.session_state.passo <= 4:
+if st.session_state.modo == "registrar" and st.session_state.passo <= 4:
     pct = int(((st.session_state.passo - 1) / 3) * 100)
     st.progress(pct)
     st.markdown("<div style='margin-bottom:1.5rem;'></div>", unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TELA 1 — BOAS-VINDAS E LGPD
+# MODO: REGISTRAR
 # ══════════════════════════════════════════════════════════════════════════════
-if st.session_state.passo == 1:
+if st.session_state.modo == "registrar":
+
+ # TELA 1 — BOAS-VINDAS E LGPD
+ if st.session_state.passo == 1:
     st.markdown("""
     <div class="step-badge">Etapa 1 de 4</div>
     <div class="step-title">Bem-vindo à Ouvidoria</div>
@@ -450,10 +471,8 @@ if st.session_state.passo == 1:
         else:
             st.error("É necessário aceitar os termos da LGPD para prosseguir.")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TELA 2 — IDENTIFICAÇÃO
-# ══════════════════════════════════════════════════════════════════════════════
-elif st.session_state.passo == 2:
+ # TELA 2 — IDENTIFICAÇÃO
+ elif st.session_state.passo == 2:
     st.markdown("""
     <div class="step-badge">Etapa 2 de 4</div>
     <div class="step-title">Identificação</div>
@@ -516,10 +535,8 @@ elif st.session_state.passo == 2:
         st.session_state.passo = 1
         st.rerun()
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TELA 3 — DETALHES DA MANIFESTAÇÃO
-# ══════════════════════════════════════════════════════════════════════════════
-elif st.session_state.passo == 3:
+ # TELA 3 — DETALHES DA MANIFESTAÇÃO
+ elif st.session_state.passo == 3:
     st.markdown("""
     <div class="step-badge">Etapa 3 de 4</div>
     <div class="step-title">Detalhes da Manifestação</div>
@@ -610,10 +627,8 @@ elif st.session_state.passo == 3:
         st.session_state.passo = 2
         st.rerun()
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TELA 4 — CONFIRMAÇÃO
-# ══════════════════════════════════════════════════════════════════════════════
-elif st.session_state.passo == 4:
+ # TELA 4 — CONFIRMAÇÃO
+ elif st.session_state.passo == 4:
     dados = st.session_state.dados
     protocolo = st.session_state.protocolo
     tem_email = dados.get('retorno') and dados.get('email')
@@ -686,6 +701,144 @@ elif st.session_state.passo == 4:
         st.session_state.dados = {}
         st.session_state.protocolo = ""
         st.rerun()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MODO: CONSULTAR
+# ══════════════════════════════════════════════════════════════════════════════
+elif st.session_state.modo == "consultar":
+
+    import random
+    from datetime import datetime, timedelta
+
+    st.markdown("""
+    <div class="step-badge">Portal de Acompanhamento</div>
+    <div class="step-title">Consultar Manifestação</div>
+    <div style="font-size:0.85rem;color:#3a3a3a;margin-bottom:1.2rem;font-weight:500;">
+        Informe o número do protocolo recebido no momento do registro
+    </div>
+    """, unsafe_allow_html=True)
+
+    protocolo_consulta = st.text_input(
+        "Número do Protocolo",
+        placeholder="OUV-AAAAMMDD-XXXXXX",
+        help="O protocolo foi exibido na tela de confirmação após o envio da manifestação."
+    )
+
+    def dias_uteis_restantes(data_abertura, sla=10):
+        hoje = datetime.now()
+        dias = 0
+        atual = data_abertura
+        while atual <= hoje:
+            if atual.weekday() < 5:
+                dias += 1
+            atual += timedelta(days=1)
+        restantes = sla - dias
+        return max(0, restantes)
+
+    def simular_ticket(protocolo):
+        random.seed(protocolo)
+        status_opcoes = ["Aberto", "Em análise", "Encerrado"]
+        pesos = [0.3, 0.4, 0.3]
+        status = random.choices(status_opcoes, weights=pesos)[0]
+        dias_atras = random.randint(1, 12)
+        data_abertura = datetime.now() - timedelta(days=dias_atras)
+        tipos = ["Reclamação", "Elogio", "Sugestão", "Denúncia"]
+        unidades = ["Aripuanã", "Juína", "Campo Verde", "Sumaré - Macarenko", "Guarantã do Norte"]
+        return {
+            "status": status,
+            "data_abertura": data_abertura.strftime("%d/%m/%Y às %H:%M"),
+            "tipo": random.choice(tipos),
+            "unidade": random.choice(unidades),
+            "dias_restantes": dias_uteis_restantes(data_abertura) if status != "Encerrado" else 0,
+            "parecer": "Sua manifestação foi analisada pela equipe da Ouvidoria. As providências cabíveis foram tomadas junto à unidade responsável. Agradecemos sua contribuição para a melhoria dos nossos serviços." if status == "Encerrado" else None
+        }
+
+    if st.button("Consultar", use_container_width=True):
+        if not protocolo_consulta.strip():
+            st.error("Informe o número do protocolo para continuar.")
+        elif not protocolo_consulta.strip().upper().startswith("OUV-"):
+            st.error("Protocolo inválido. O formato correto é OUV-AAAAMMDD-XXXXXX.")
+        else:
+            ticket = simular_ticket(protocolo_consulta.strip().upper())
+
+            st.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
+
+            # Status badge
+            cor_status = {"Aberto": "#00AEEF", "Em análise": "#e65100", "Encerrado": "#008B8B"}
+            st.markdown(f"""
+            <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);
+                 border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <div style="font-size:0.75rem;font-weight:700;color:#005f8a;text-transform:uppercase;letter-spacing:0.08em;">Protocolo</div>
+                <div style="font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:20px;
+                     background:{cor_status[ticket['status']]}20;color:{cor_status[ticket['status']]};">
+                  {ticket['status']}
+                </div>
+              </div>
+              <div style="font-size:1.2rem;font-weight:700;color:#00AEEF;font-family:monospace;margin-bottom:1rem;">
+                {protocolo_consulta.strip().upper()}
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:0.88rem;">
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="color:#7ab8d4;">Data de abertura</span>
+                  <span style="font-weight:600;color:#2e2e2e;">{ticket['data_abertura']}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="color:#7ab8d4;">Tipo</span>
+                  <span style="font-weight:600;color:#2e2e2e;">{ticket['tipo']}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;">
+                  <span style="color:#7ab8d4;">Unidade</span>
+                  <span style="font-weight:600;color:#2e2e2e;">{ticket['unidade']}</span>
+                </div>
+              </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Prazo restante
+            if ticket["status"] != "Encerrado":
+                dias = ticket["dias_restantes"]
+                cor_prazo = "#008B8B" if dias >= 5 else "#e65100" if dias >= 2 else "#c62828"
+                pct_prazo = int((dias / 10) * 100)
+                st.markdown(f"""
+                <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);
+                     border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;">
+                  <div style="font-size:0.75rem;font-weight:700;color:#005f8a;text-transform:uppercase;
+                       letter-spacing:0.08em;margin-bottom:0.75rem;">Prazo de Atendimento</div>
+                  <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;">
+                    <span style="font-size:2rem;font-weight:700;color:{cor_prazo};">{dias}</span>
+                    <span style="font-size:0.88rem;color:#7ab8d4;">dias úteis restantes de 10</span>
+                  </div>
+                  <div style="background:#D6EDF8;border-radius:4px;height:6px;">
+                    <div style="background:{cor_prazo};width:{pct_prazo}%;height:6px;border-radius:4px;transition:width 0.3s;"></div>
+                  </div>
+                  <div style="font-size:0.75rem;color:#7ab8d4;margin-top:6px;">
+                    {'Dentro do prazo — sua manifestação está sendo tratada.' if dias >= 2 else 'Prazo crítico — sua manifestação está em tratamento prioritário.'}
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Parecer final
+            if ticket["status"] == "Encerrado" and ticket["parecer"]:
+                st.markdown(f"""
+                <div style="background:#E1F5EE;border:0.5px solid #9FE1CB;border-radius:var(--border-radius-lg);
+                     padding:1.25rem;margin-bottom:1rem;">
+                  <div style="font-size:0.75rem;font-weight:700;color:#085041;text-transform:uppercase;
+                       letter-spacing:0.08em;margin-bottom:0.75rem;">Parecer Final da Ouvidoria</div>
+                  <div style="font-size:0.9rem;color:#1a3a4a;line-height:1.75;">
+                    {ticket['parecer']}
+                  </div>
+                  <div style="font-size:0.75rem;color:#0F6E56;margin-top:8px;font-weight:600;">
+                    Manifestação encerrada — Obrigado pela sua contribuição.
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div style="font-size:0.75rem;color:#7ab8d4;text-align:center;margin-top:0.5rem;">
+            Os dados exibidos são atualizados automaticamente conforme o andamento interno da manifestação.
+            </div>
+            """, unsafe_allow_html=True)
 
 # Rodapé
 st.markdown("""
