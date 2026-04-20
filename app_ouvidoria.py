@@ -394,21 +394,27 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── SELETOR DE MODO ────────────────────────────────────────────────────────────
-col_m1, col_m2 = st.columns(2)
-with col_m1:
-    if st.button("📋  Registrar Manifestação", use_container_width=True,
-        type="primary" if st.session_state.modo == "registrar" else "secondary"):
-        st.session_state.modo = "registrar"
-        st.session_state.passo = 1
-        st.rerun()
-with col_m2:
-    if st.button("🔍  Consultar Protocolo", use_container_width=True,
-        type="primary" if st.session_state.modo == "consultar" else "secondary"):
-        st.session_state.modo = "consultar"
-        st.rerun()
+# ── SELETOR DE MODO (só na tela 1, tela 4 e modo consultar) ───────────────────
+mostrar_seletor = (
+    st.session_state.modo == "consultar" or
+    st.session_state.passo == 1 or
+    st.session_state.passo == 4
+)
 
-st.markdown("<div style='margin-bottom:1rem;'></div>", unsafe_allow_html=True)
+if mostrar_seletor:
+    col_m1, col_m2 = st.columns(2)
+    with col_m1:
+        if st.button("📋  Registrar Manifestação", use_container_width=True,
+            type="primary" if st.session_state.modo == "registrar" else "secondary"):
+            st.session_state.modo = "registrar"
+            st.session_state.passo = 1
+            st.rerun()
+    with col_m2:
+        if st.button("🔍  Consultar Protocolo", use_container_width=True,
+            type="primary" if st.session_state.modo == "consultar" else "secondary"):
+            st.session_state.modo = "consultar"
+            st.rerun()
+    st.markdown("<div style='margin-bottom:1rem;'></div>", unsafe_allow_html=True)
 
 # ── BARRA DE PROGRESSO DISCRETA ───────────────────────────────────────────────
 if st.session_state.modo == "registrar" and st.session_state.passo <= 4:
