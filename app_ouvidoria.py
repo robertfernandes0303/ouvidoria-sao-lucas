@@ -415,7 +415,7 @@ if st.session_state.passo == 1:
         são pilares essenciais para oferecer uma saúde pública com afeto, respeito e 
         excelência. Este é o seu canal de comunicação direto, seguro e confidencial. 
         Queremos ouvir a sua voz! Você pode utilizar este espaço para registrar 
-        <strong style="color:#00AEEF;">Elogios, Sugestões, Solicitações, Reclamações ou Denúncias</strong> 
+        <strong style="color:#00AEEF;">Elogios, Sugestões, Reclamações ou Denúncias</strong> 
         referentes aos nossos serviços e unidades.
     </div>
     """, unsafe_allow_html=True)
@@ -648,7 +648,15 @@ elif st.session_state.passo == 4:
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.info("**Relato anônimo registrado.** Seu sigilo está garantido. O protocolo não foi gerado conforme a política de anonimato.")
+        st.markdown(f"""
+        <div class="protocol-box">
+          <p>Número do Protocolo para Consulta</p>
+          <h2>{protocolo}</h2>
+          <div style="font-size:0.78rem;color:#7ab8d4;margin-top:6px;">
+            Guarde este número para acompanhar sua manifestação. Seu anonimato está garantido.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
