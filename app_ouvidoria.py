@@ -462,9 +462,10 @@ elif st.session_state.passo == 2:
 
     perfil = st.selectbox("Perfil de Relacionamento", [
         "— Selecione —",
-        "Paciente, Familiar ou Acompanhante",
+        "Paciente",
+        "Acompanhante",
+        "Prestador",
         "Colaborador",
-        "Médico",
         "Fornecedor ou Outro"
     ])
 
@@ -532,17 +533,17 @@ elif st.session_state.passo == 3:
         "São Lourenço da Serra", "Sumaré - Área Cura", "Sumaré - Macarenko", "Sumaré - Matão"
     ])
     tipo = st.selectbox("Tipo de Manifestação", [
-        "— Selecione —", "Elogio", "Sugestão", "Solicitação", "Reclamação", "Denúncia"
+        "— Selecione —", "Elogio", "Sugestão", "Reclamação", "Denúncia"
     ])
 
     assunto = st.selectbox("Assunto Principal", [
         "— Selecione —",
-        "Atendimento Assistencial",
-        "Tempo de Espera e Acesso",
-        "Conduta Profissional e Ética",
-        "Infraestrutura e Hotelaria",
-        "Apoio Diagnóstico e Terapêutico",
-        "Administrativo e Burocrático",
+        "Atendimento",
+        "Tempo de Espera",
+        "Conduta Profissional",
+        "Exames",
+        "Estrutura Predial",
+        "Limpeza",
         "Outros"
     ])
 
@@ -568,11 +569,7 @@ elif st.session_state.passo == 3:
     st.markdown(f"<div style='font-size:0.75rem;color:{cor_count};text-align:right;margin-top:-10px;'>{char_count} caracteres</div>", unsafe_allow_html=True)
 
     st.write("")
-    st.file_uploader(
-        "Anexar Evidências (opcional)",
-        type=["jpg", "jpeg", "png", "pdf", "mp4", "mp3"],
-        help="Imagens, documentos PDF ou vídeos. Máximo 25 MB."
-    )
+
 
     st.write("")
     if st.button("Enviar Manifestação ✓", use_container_width=True):
